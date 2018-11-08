@@ -29,6 +29,11 @@
 
     function onWindowMoved() {
 
+        // On MacOS this function causes the window to slide around uncontrollably
+        if (process.platform === 'darwin') {
+            return;
+        }
+
         mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
         var winPosition = mainWindow.getPosition();
         playerWindow.setPosition(winPosition[0], winPosition[1]);
@@ -896,6 +901,12 @@
 
             icon: __dirname + '/icon.ico'
         };
+
+        if (process.platform === 'darwin') {
+            // On MacOS, not setting the window to transparent causes an
+            // unmovable empty window behind Emby
+            windowOptions.transparent = true;
+        }
 
         windowOptions.width = previousWindowInfo.width || 1280;
         windowOptions.height = previousWindowInfo.height || 720;
